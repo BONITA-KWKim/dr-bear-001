@@ -1,12 +1,446 @@
 <!doctype html>
 <html lang="ko">
-  <head>
-    <meta charset="utf-8">
-    <title>나의 첫 버셀 페이지</title>
-  </head>
-  <body>
-    <h1>안녕하세요, 버셀!</h1>
-    <p>이 페이지는 버셀로 배포했습니다.</p>
-  </body>
-</html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>달빛문구</title>
+  <style>
+    :root {
+      --cream: #f7f0e1;
+      --cream-deep: #ece0c6;
+      --paper: #fffaf0;
+      --navy: #1f2b4d;
+      --navy-soft: #34426b;
+      --ink: #2e2a24;
+      --muted: #7a7062;
+      --line: #e0d3b8;
+    }
 
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+      line-height: 1.5;
+    }
+
+    h1, h2, h3, p, ul, dl, dd { margin: 0; }
+    ul { padding: 0; list-style: none; }
+
+    .inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* 헤더 */
+    .site-header {
+      border-bottom: 2px solid var(--navy);
+      padding: 28px 0 20px;
+    }
+    .site-header .inner {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      font-family: "AppleMyungjo", "Nanum Myeongjo", "Noto Serif KR", serif;
+      font-size: 32px;
+      color: var(--navy);
+      letter-spacing: -0.02em;
+    }
+    .tagline {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .cart-link {
+      flex-shrink: 0;
+      color: var(--navy);
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid var(--navy);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 14px;
+    }
+    .cart-link:hover { background: var(--navy); color: var(--cream); }
+
+    /* 레이아웃 */
+    .layout {
+      display: grid;
+      gap: 32px;
+      padding-top: 28px;
+      padding-bottom: 48px;
+    }
+    @media (min-width: 860px) {
+      .layout { grid-template-columns: 1fr 320px; align-items: start; }
+      .cart { position: sticky; top: 20px; }
+    }
+
+    .section-title {
+      font-size: 20px;
+      color: var(--navy);
+      margin-bottom: 16px;
+    }
+
+    /* 버튼 */
+    .btn {
+      font: inherit;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+    .btn-primary { background: var(--navy); color: var(--cream); }
+    .btn-primary:hover { background: var(--navy-soft); }
+    .btn:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+    .btn-block { display: block; width: 100%; }
+    button:focus-visible, a:focus-visible {
+      outline: 2px solid var(--navy);
+      outline-offset: 2px;
+    }
+
+    /* 상품 목록 */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+    }
+    .product {
+      display: flex;
+      flex-direction: column;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .thumb {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 4 / 3;
+      border-radius: 8px;
+      font-size: 44px;
+      margin-bottom: 12px;
+    }
+    .thumb--navy { background: var(--navy); }
+    .thumb--cream { background: var(--cream-deep); }
+    .category {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .product-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 2px 0 4px;
+    }
+    .price {
+      color: var(--navy);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .product .btn { margin-top: auto; }
+
+    /* 장바구니 */
+    .cart {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .cart .section-title:focus { outline: none; }
+    .cart-empty {
+      color: var(--muted);
+      font-size: 14px;
+      padding: 8px 0 16px;
+    }
+    .cart-items { margin-bottom: 16px; }
+    .cart-item {
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--line);
+    }
+    .cart-item:first-child { padding-top: 0; }
+    .cart-item-head, .cart-item-body {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .cart-item-name { font-weight: 600; font-size: 15px; }
+    .cart-item-body { margin-top: 8px; }
+    .cart-item-price { color: var(--navy); font-weight: 700; }
+    .link-btn {
+      font: inherit;
+      font-size: 13px;
+      color: var(--muted);
+      background: none;
+      border: none;
+      padding: 2px 4px;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .qty { display: flex; align-items: center; gap: 4px; }
+    .qty-btn {
+      width: 28px;
+      height: 28px;
+      font: inherit;
+      font-weight: 700;
+      color: var(--navy);
+      background: var(--cream);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .qty-btn:disabled { color: var(--line); cursor: not-allowed; }
+    .qty-value { min-width: 24px; text-align: center; }
+
+    .free-ship {
+      background: var(--cream);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    .free-ship strong { color: var(--navy); }
+    .free-ship.is-free { background: var(--navy); color: var(--cream); }
+
+    .summary div {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 15px;
+    }
+    .summary dt { color: var(--muted); }
+    .summary .total {
+      border-top: 1px solid var(--line);
+      margin-top: 8px;
+      padding-top: 12px;
+      font-weight: 700;
+      font-size: 17px;
+    }
+    .summary .total dt { color: var(--ink); }
+    .summary .total dd { color: var(--navy); }
+    .cart .btn-block { margin-top: 16px; padding: 12px; }
+
+    /* 주문 안내 */
+    dialog {
+      width: min(400px, calc(100vw - 32px));
+      border: none;
+      border-radius: 12px;
+      padding: 24px;
+      background: var(--paper);
+      color: var(--ink);
+    }
+    dialog::backdrop { background: rgba(31, 43, 77, 0.5); }
+    .order-lines { margin-bottom: 12px; }
+    .order-lines li {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 14px;
+      padding: 4px 0;
+    }
+    .order-notice {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 16px 0;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <div>
+        <h1 class="brand">달빛문구</h1>
+        <p class="tagline">밤에 쓰는 기록을 위한 작은 문구점</p>
+      </div>
+      <a class="cart-link" href="#cart">장바구니 <span id="cart-count">0</span></a>
+    </div>
+  </header>
+
+  <main class="inner layout">
+    <section aria-labelledby="products-title">
+      <h2 id="products-title" class="section-title">상품</h2>
+      <ul id="product-list" class="product-grid"></ul>
+    </section>
+
+    <aside id="cart" class="cart" aria-labelledby="cart-title">
+      <h2 id="cart-title" class="section-title" tabindex="-1">장바구니</h2>
+      <p id="cart-empty" class="cart-empty">장바구니가 비어 있어요.</p>
+      <ul id="cart-items" class="cart-items"></ul>
+      <p id="free-ship" class="free-ship" aria-live="polite"></p>
+      <dl class="summary">
+        <div><dt>상품 금액</dt><dd id="subtotal">0원</dd></div>
+        <div><dt>배송비</dt><dd id="shipping">0원</dd></div>
+        <div class="total"><dt>결제 금액</dt><dd id="total">0원</dd></div>
+      </dl>
+      <button id="order-btn" type="button" class="btn btn-primary btn-block" disabled>주문하기</button>
+    </aside>
+  </main>
+
+  <dialog id="order-dialog" aria-labelledby="order-title">
+    <h2 id="order-title" class="section-title">주문 안내</h2>
+    <ul id="order-lines" class="order-lines"></ul>
+    <dl class="summary">
+      <div><dt>상품 금액</dt><dd id="order-subtotal"></dd></div>
+      <div><dt>배송비</dt><dd id="order-shipping"></dd></div>
+      <div class="total"><dt>결제 금액</dt><dd id="order-total"></dd></div>
+    </dl>
+    <p class="order-notice">지금은 주문 내역만 확인할 수 있어요. 실제 결제는 아직 준비 중입니다.</p>
+    <form method="dialog">
+      <button class="btn btn-primary btn-block">확인</button>
+    </form>
+  </dialog>
+
+  <script>
+    const PRODUCTS = [
+      { id: 1, name: '달빛 노트', price: 4500, category: '노트', emoji: '🌙', tone: 'navy' },
+      { id: 2, name: '별자리 스프링노트', price: 6000, category: '노트', emoji: '✨', tone: 'navy' },
+      { id: 3, name: '크림 메모패드', price: 3000, category: '노트', emoji: '📝', tone: 'cream' },
+      { id: 4, name: '밤하늘 젤펜', price: 2000, category: '펜', emoji: '🖊️', tone: 'cream' },
+      { id: 5, name: '남색 만년필', price: 18000, category: '펜', emoji: '✒️', tone: 'cream' },
+      { id: 6, name: '초승달 형광펜 세트', price: 5500, category: '펜', emoji: '✏️', tone: 'navy' },
+      { id: 7, name: '달빛 엽서 세트', price: 7000, category: '카드', emoji: '💌', tone: 'cream' },
+      { id: 8, name: '별 스티커', price: 2500, category: '카드', emoji: '⭐', tone: 'navy' },
+    ];
+    const SHIPPING_FEE = 3000;
+    const FREE_SHIPPING_MIN = 50000;
+
+    // 장바구니: 담은 순서대로 { id, qty }
+    const cart = [];
+
+    const $ = (selector) => document.querySelector(selector);
+    const won = (n) => n.toLocaleString('ko-KR') + '원';
+    const findProduct = (id) => PRODUCTS.find((p) => p.id === id);
+
+    function getTotals() {
+      const subtotal = cart.reduce((sum, line) => sum + findProduct(line.id).price * line.qty, 0);
+      const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_MIN ? 0 : SHIPPING_FEE;
+      return { subtotal, shipping, total: subtotal + shipping };
+    }
+
+    function shippingText(subtotal, shipping) {
+      return subtotal >= FREE_SHIPPING_MIN ? '무료' : won(shipping);
+    }
+
+    function renderProducts() {
+      $('#product-list').innerHTML = PRODUCTS.map((p) => `
+        <li class="product">
+          <div class="thumb thumb--${p.tone}" aria-hidden="true">${p.emoji}</div>
+          <span class="category">${p.category}</span>
+          <h3 class="product-name">${p.name}</h3>
+          <p class="price">${won(p.price)}</p>
+          <button type="button" class="btn btn-primary add-btn" data-id="${p.id}" aria-label="${p.name} 담기">담기</button>
+        </li>
+      `).join('');
+    }
+
+    function renderCart() {
+      const { subtotal, shipping, total } = getTotals();
+
+      $('#cart-count').textContent = cart.reduce((sum, line) => sum + line.qty, 0);
+      $('#cart-empty').hidden = cart.length > 0;
+
+      $('#cart-items').innerHTML = cart.map((line) => {
+        const p = findProduct(line.id);
+        return `
+          <li class="cart-item" data-id="${p.id}">
+            <div class="cart-item-head">
+              <span class="cart-item-name">${p.name}</span>
+              <button type="button" class="link-btn" data-action="remove" aria-label="${p.name} 빼기">삭제</button>
+            </div>
+            <div class="cart-item-body">
+              <div class="qty">
+                <button type="button" class="qty-btn" data-action="dec" aria-label="${p.name} 수량 줄이기" ${line.qty <= 1 ? 'disabled' : ''}>−</button>
+                <span class="qty-value" aria-label="수량 ${line.qty}개">${line.qty}</span>
+                <button type="button" class="qty-btn" data-action="inc" aria-label="${p.name} 수량 늘리기">+</button>
+              </div>
+              <span class="cart-item-price">${won(p.price * line.qty)}</span>
+            </div>
+          </li>
+        `;
+      }).join('');
+
+      const remaining = FREE_SHIPPING_MIN - subtotal;
+      const freeShip = $('#free-ship');
+      freeShip.innerHTML = remaining > 0
+        ? `무료배송까지 <strong>${won(remaining)}</strong> 남았어요`
+        : '무료배송이 적용됐어요';
+      freeShip.classList.toggle('is-free', remaining <= 0);
+
+      $('#subtotal').textContent = won(subtotal);
+      $('#shipping').textContent = shippingText(subtotal, shipping);
+      $('#total').textContent = won(total);
+      $('#order-btn').disabled = cart.length === 0;
+    }
+
+    function addToCart(id) {
+      const line = cart.find((l) => l.id === id);
+      if (line) line.qty += 1;
+      else cart.push({ id, qty: 1 });
+      renderCart();
+    }
+
+    function changeQty(id, delta) {
+      const line = cart.find((l) => l.id === id);
+      if (!line) return;
+      line.qty = Math.max(1, line.qty + delta);
+      renderCart();
+    }
+
+    function removeFromCart(id) {
+      const index = cart.findIndex((l) => l.id === id);
+      if (index !== -1) cart.splice(index, 1);
+      renderCart();
+    }
+
+    // 상품 담기
+    $('#product-list').addEventListener('click', (event) => {
+      const button = event.target.closest('.add-btn');
+      if (!button) return;
+      addToCart(Number(button.dataset.id));
+      button.textContent = '담았어요';
+      clearTimeout(button.resetTimer);
+      button.resetTimer = setTimeout(() => { button.textContent = '담기'; }, 1000);
+    });
+
+    // 장바구니 수량 조절 · 빼기
+    $('#cart-items').addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-action]');
+      if (!button) return;
+      const id = Number(button.closest('.cart-item').dataset.id);
+      const action = button.dataset.action;
+
+      if (action === 'inc') changeQty(id, 1);
+      if (action === 'dec') changeQty(id, -1);
+      if (action === 'remove') removeFromCart(id);
+
+      // 다시 그린 뒤에도 키보드 포커스가 사라지지 않게 한다
+      const item = $(`#cart-items .cart-item[data-id="${id}"]`);
+      const next = item && (item.querySelector(`[data-action="${action}"]:not(:disabled)`)
+        || item.querySelector('[data-action="inc"]'));
+      (next || $('#cart-title')).focus();
+    });
+
+    // 주문하기 안내
+    $('#order-btn').addEventListener('click', () => {
+      const { subtotal, shipping, total } = getTotals();
+      $('#order-lines').innerHTML = cart.map((line) => {
+        const p = findProduct(line.id);
+        return `<li><span>${p.name} × ${line.qty}</span><span>${won(p.price * line.qty)}</span></li>`;
+      }).join('');
+      $('#order-subtotal').textContent = won(subtotal);
+      $('#order-shipping').textContent = shippingText(subtotal, shipping);
+      $('#order-total').textContent = won(total);
+      $('#order-dialog').showModal();
+    });
+
+    renderProducts();
+    renderCart();
+  </script>
+</body>
+</html>
